@@ -31,6 +31,8 @@ public class PrimeiraTela extends AppCompatActivity {
         setTransitionAnimation();
 
         setContentView(R.layout.tela_entrada);
+
+        //Controle de estado de acesso do usuário: está logado ou não?
         mAuth = FirebaseAuth.getInstance();
         mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
