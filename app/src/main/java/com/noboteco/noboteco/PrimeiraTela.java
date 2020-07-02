@@ -21,8 +21,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
-    ImageView _logoAmbev;
+public class PrimeiraTela extends AppCompatActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
