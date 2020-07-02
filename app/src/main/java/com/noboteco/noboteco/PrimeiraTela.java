@@ -5,21 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.transition.ChangeImageTransform;
-import android.transition.Fade;
 import android.transition.Slide;
-import android.transition.TransitionManager;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -60,7 +52,7 @@ public class PrimeiraTela extends AppCompatActivity {
         //Verificar se a origem da chamada de Primeira Tela é Login ou Cadastro
         String origem = getIntent().getStringExtra("from");
         if(origem != null){
-            fromWhatActivity(origem);
+            fromWhichActivity(origem);
         }
 
         meuperfilbtn.setOnClickListener(new View.OnClickListener() {
@@ -128,7 +120,7 @@ public class PrimeiraTela extends AppCompatActivity {
     /*
     Método responsavel por mostrar aviso ao usuario apos login ou cadastro + login
      */
-    public void fromWhatActivity(String origem){
+    public void fromWhichActivity(String origem){
         if(origem.equals("cadastro")){
             Toast.makeText(PrimeiraTela.this, "Sucesso ao efetuar cadastro! Você já está logado na plataforma, aproveite!", Toast.LENGTH_LONG).show();
         }else if(origem.equals("login")){
