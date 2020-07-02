@@ -3,6 +3,7 @@ package com.noboteco.noboteco;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -27,9 +28,13 @@ public class login extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         Button btnentrar = findViewById(R.id.login);
+        Button btncadastro = findViewById(R.id.fazer_cadastro);
+
         mEditUsername = findViewById(R.id.editusername);
         mEditPassword = findViewById(R.id.editpassword);
 
+
+        // Botao entrar
         btnentrar.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -40,7 +45,7 @@ public class login extends AppCompatActivity {
                         .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                             @Override
                             public void onSuccess(AuthResult authResult) {
-                                changeActivity();
+                                changeActivity("home");
                                 //TODO: adicionar ao intent a informação de userID para uso futuro do banco de dados
                             }
                         })
@@ -53,12 +58,31 @@ public class login extends AppCompatActivity {
             }
         });
 
+        btncadastro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeActivity("cadastro");
+            }
+        });
+
     }
 
-    public void changeActivity(){
-        Intent home = new Intent(this, PrimeiraTela.class);
-        startActivity(home);
+    // Direciona para proxima atividade
+    public void changeActivity(String destino){
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
+        switch(destino) {
+            case "home":
+                Intent gohome = new Intent(this, PrimeiraTela.class);
+                startActivity(gohome, options.toBundle());
+                break;
+            case "cadastro":
+                Intent gocadastro = new Intent(this, cadastro.class);
+                startActivity(gocadastro, options.toBundle());
+                break;
+            default :
+                Toast.makeText(this, "Atividade não implementada.", Toast.LENGTH_LONG).show();
+        }
+    }
     }
 
 
-}
