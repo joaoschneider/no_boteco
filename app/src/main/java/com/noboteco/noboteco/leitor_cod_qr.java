@@ -1,6 +1,8 @@
 package com.noboteco.noboteco;
 
 import android.os.Bundle;
+import android.transition.Slide;
+import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
 
