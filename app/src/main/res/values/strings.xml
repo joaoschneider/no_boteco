@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">No Boteco</string>
+
+    <!-- Tela de Leitor QR -->
+    <string name="scan">Escanear código QR</string>
+
+    <!-- Tela Feed do Bar -->
+    <string name="tituloFeed">No bar com você</string>
+
+    <!-- Menu Bar -->
+    <string name="menu">Menu de cervejas</string>
+
+    <!-- Perfil -->
+    <string name="titulo_perfil">Meu perfil</string>
 </resources>
