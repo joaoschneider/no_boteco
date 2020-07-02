@@ -35,6 +35,7 @@ public class PrimeiraTela extends AppCompatActivity {
 
         Button meuperfilbtn = findViewById(R.id.meu_perfil);
         Button entrarbarbtn = findViewById(R.id.entrar_no_bar);
+        Button login_logoutbtn = findViewById(R.id.login_logout);
 
         meuperfilbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,7 +51,12 @@ public class PrimeiraTela extends AppCompatActivity {
             }
         });
 
-
+        login_logoutbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeActivity("login_logout");
+            }
+        });
     }
 
     public void changeActivity(String destino){
@@ -60,6 +66,10 @@ public class PrimeiraTela extends AppCompatActivity {
              */
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
         switch(destino) {
+            case "login_logout":
+                Intent gologin = new Intent(this, login.class);
+                startActivity(gologin, options.toBundle());
+                break;
             case "entrar_bar":
                 Intent gobar = new Intent(this, leitor_cod_qr.class);
                 startActivity(gobar, options.toBundle());
