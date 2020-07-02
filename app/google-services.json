@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "136615407136",
+    "firebase_url": "https://no-boteco.firebaseio.com",
+    "project_id": "no-boteco",
+    "storage_bucket": "no-boteco.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:136615407136:android:ab46e10c55f57e40df9645",
+        "android_client_info": {
+          "package_name": "com.noboteco.noboteco"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "136615407136-392kb2hhrhp75m251q6c12quoloi0rq7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsVk11D9viSUHbnBhjJ8AGBHWLRX0dgj0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "136615407136-392kb2hhrhp75m251q6c12quoloi0rq7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
