@@ -68,7 +68,7 @@ public class perfil extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         mUserInfo = documentSnapshot;
-                        setUserInfoView();
+                        setUserNameView();
                         Toast.makeText(perfil.this, "Informações atualizadas", Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -76,6 +76,7 @@ public class perfil extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(perfil.this, "Falha ao buscar informações...", Toast.LENGTH_SHORT).show();
+                        Log.d("Debug", "Erro: " + e.toString());
                     }
                 });
 
@@ -93,6 +94,7 @@ public class perfil extends AppCompatActivity {
                     @Override
                     public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                         Log.d("Debug", "Avatar baixado.");
+                        setUserAvatarView();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -103,10 +105,12 @@ public class perfil extends AppCompatActivity {
                 });
     }
 
-    private void setUserInfoView(){
-        ImageView avatar = findViewById(R.id.avatar_usuario);
+    private void setUserNameView(){
         TextView username = findViewById(R.id.titulo_perfil);
         username.setText(mUserInfo.get("username").toString());
+    }
+    private void setUserAvatarView(){
+        ImageView avatar = findViewById(R.id.avatar_usuario);
         Bitmap avatarBmp = BitmapFactory.decodeFile(mAvatar.getPath());
         RoundedBitmapDrawable rndBmp = RoundedBitmapDrawableFactory.create(getResources(), avatarBmp);
         rndBmp.setCircular(true);
