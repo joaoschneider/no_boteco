@@ -45,8 +45,8 @@ public class login extends AppCompatActivity {
                         .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                             @Override
                             public void onSuccess(AuthResult authResult) {
-                                changeActivity("home");
-                                //TODO: adicionar ao intent a informação de userID para uso futuro do banco de dados
+                                //Pegar Uid do usuario para passar para perfil.java
+                                changeActivity("perfil", authResult.getUser().getUid());
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -61,19 +61,20 @@ public class login extends AppCompatActivity {
         btncadastro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeActivity("cadastro");
+                changeActivity("cadastro", null);
             }
         });
 
     }
 
     // Direciona para proxima atividade
-    public void changeActivity(String destino){
+    public void changeActivity(String destino, String uid){
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
         switch(destino) {
-            case "home":
-                Intent gohome = new Intent(this, PrimeiraTela.class);
+            case "perfil":
+                Intent gohome = new Intent(this, perfil.class);
                 gohome.putExtra("from", "login");
+                gohome.putExtra("uid", uid);
                 startActivity(gohome);
                 overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                 break;

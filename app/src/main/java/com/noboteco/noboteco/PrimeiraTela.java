@@ -99,6 +99,7 @@ public class PrimeiraTela extends AppCompatActivity {
                 break;
             case "ver_perfil":
                 Intent goperfil = new Intent(this, perfil.class);
+                goperfil.putExtra("from","primeiraTela");
                 startActivity(goperfil, options.toBundle());
                 break;
             default :

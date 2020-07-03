@@ -14,6 +14,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class cadastro extends AppCompatActivity {
     EditText mUsuario;
@@ -21,13 +26,14 @@ public class cadastro extends AppCompatActivity {
     EditText mSenha;
     EditText mConfirmaSenha;
     FirebaseAuth mAuth;
-
+    FirebaseFirestore mFirestore;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cadastro);
 
         mAuth = FirebaseAuth.getInstance();
+        mFirestore = FirebaseFirestore.getInstance();
 
         mUsuario = findViewById(R.id.edtusername);
         mEmail = findViewById(R.id.edtemail);
@@ -62,7 +68,10 @@ public class cadastro extends AppCompatActivity {
                             .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                                 @Override
                                 public void onSuccess(AuthResult authResult) {
-                                    String uid = authResult.getUser().getUid();
+                                    Map<String, String> data = new HashMap<>();
+                                    //Criar entrada do usuario no banco de dados usando Uid
+                                    data.put("userUid", authResult.getUser().getUid());
+                                    mFirestore.document("users/" + authResult.getUser().getUid()).set(data);
                                     changeActivity();
                                 }
                             })
@@ -79,7 +88,7 @@ public class cadastro extends AppCompatActivity {
     }
 
     public void changeActivity(){
-        Intent gohome = new Intent(this, PrimeiraTela.class);
+        Intent gohome = new Intent(this, perfil.class);
         gohome.putExtra("from", "cadastro");
         startActivity(gohome);
         overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
