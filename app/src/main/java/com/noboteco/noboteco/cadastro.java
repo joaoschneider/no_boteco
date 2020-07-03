@@ -80,6 +80,7 @@ public class cadastro extends AppCompatActivity {
         Intent gohome = new Intent(this, PrimeiraTela.class);
         gohome.putExtra("from", "cadastro");
         startActivity(gohome);
+        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
     }
 
 

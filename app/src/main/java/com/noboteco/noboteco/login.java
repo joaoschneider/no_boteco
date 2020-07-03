@@ -74,11 +74,13 @@ public class login extends AppCompatActivity {
             case "home":
                 Intent gohome = new Intent(this, PrimeiraTela.class);
                 gohome.putExtra("from", "login");
-                startActivity(gohome, options.toBundle());
+                startActivity(gohome);
+                overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                 break;
             case "cadastro":
                 Intent gocadastro = new Intent(this, cadastro.class);
-                startActivity(gocadastro, options.toBundle());
+                startActivity(gocadastro);
+                overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                 break;
             default :
                 Toast.makeText(this, "Atividade não implementada.", Toast.LENGTH_LONG).show();
