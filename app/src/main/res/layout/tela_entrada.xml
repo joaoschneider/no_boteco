@@ -9,8 +9,12 @@
     <ImageView
         android:id="@+id/logoAmbev"
         android:layout_width="match_parent"
-        android:scaleType="fitCenter"
         android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:scaleType="fitCenter"
         android:tint="#21409a"
         android:transitionName="logoAmbev"
         app:layout_constraintBottom_toTopOf="@+id/imageView2"
@@ -24,46 +28,43 @@
         android:id="@+id/imageView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.45"
         tools:srcCompat="@tools:sample/avatars" />
 
     <Button
         android:id="@+id/entrar_no_bar"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Entrar no bar"
-        app:layout_constraintVertical_bias="0.60"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/imageView2"
+        app:layout_constraintStart_toStartOf="@+id/imageView2"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
     <Button
         android:id="@+id/meu_perfil"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Meu perfil"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/entrar_no_bar"
-        app:layout_constraintVertical_bias="0.142" />
+        app:layout_constraintEnd_toEndOf="@+id/entrar_no_bar"
+        app:layout_constraintHorizontal_bias="0.482"
+        app:layout_constraintStart_toStartOf="@+id/entrar_no_bar"
+        app:layout_constraintTop_toBottomOf="@+id/entrar_no_bar" />
 
     <Button
         android:id="@+id/login_logout"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="72dp"
+        android:layout_marginTop="20dp"
         android:text="Login/Logout"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/meu_perfil"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/meu_perfil"
-        app:layout_constraintVertical_bias="0.698" />
+        app:layout_constraintStart_toStartOf="@+id/meu_perfil"
+        app:layout_constraintTop_toBottomOf="@+id/meu_perfil" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
