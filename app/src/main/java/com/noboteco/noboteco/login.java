@@ -73,6 +73,7 @@ public class login extends AppCompatActivity {
         switch(destino) {
             case "home":
                 Intent gohome = new Intent(this, PrimeiraTela.class);
+                gohome.putExtra("from", "login");
                 startActivity(gohome, options.toBundle());
                 break;
             case "cadastro":
