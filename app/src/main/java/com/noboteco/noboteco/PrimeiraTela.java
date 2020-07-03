@@ -4,8 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -52,15 +55,15 @@ public class PrimeiraTela extends AppCompatActivity {
         switch(destino) {
             case "login_logout":
                 Intent gologin = new Intent(this, login.class);
-                startActivity(gologin, options.toBundle());
+                startActivity(gologin);
                 break;
             case "entrar_bar":
                 Intent gobar = new Intent(this, leitor_cod_qr.class);
-                startActivity(gobar, options.toBundle());
+                startActivity(gobar);
                 break;
             case "ver_perfil":
                 Intent goperfil = new Intent(this, perfil.class);
-                startActivity(goperfil, options.toBundle());
+                startActivity(goperfil);
                 break;
             default :
                 Toast.makeText(this, "Atividade não implementada.", Toast.LENGTH_LONG).show();
