@@ -5,22 +5,27 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.OnProgressListener;
 
 import java.io.File;
-
+/*
+É essencial que toda a chamada para a activity Perfil seja acompanhada, no Intent, pelo UID do usuário. Isso garante que o avatar estará atualizado
+no perfil e no feed do bar.
+ */
 public class perfil extends AppCompatActivity {
     String mUid;
     File mAvatar;
@@ -38,10 +43,6 @@ public class perfil extends AppCompatActivity {
         fromWhichActivity(origem);
         mFirestore = FirebaseFirestore.getInstance();
         getUserInfo();
-        ImageView avatar = findViewById(R.id.avatar_usuario);
-        //Setando avatar no ImageView
-        Bitmap avatarBmp = BitmapFactory.decodeFile(mAvatar.getPath());
-        avatar.setImageBitmap(avatarBmp);
 
     }
 
@@ -67,6 +68,7 @@ public class perfil extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         mUserInfo = documentSnapshot;
+                        setUserInfoView();
                         Toast.makeText(perfil.this, "Informações atualizadas", Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -76,7 +78,7 @@ public class perfil extends AppCompatActivity {
                         Toast.makeText(perfil.this, "Falha ao buscar informações...", Toast.LENGTH_SHORT).show();
                     }
                 });
-        mAvatar = new File(getCacheDir() + "avatar.jpg");
+
         //Após buscar mUid, buscar o avatar no Storage (nome do arquivo é mUid.jpg)
         getUserAvatar();
     }
@@ -85,6 +87,7 @@ public class perfil extends AppCompatActivity {
     Método responsavel por buscar o avatar do usuário no Storage
      */
     private void getUserAvatar(){
+        mAvatar = new File(getCacheDir() + "avatar.jpg");
         FirebaseStorage.getInstance().getReference("/"+mUid+".jpg").getFile(mAvatar)
                 .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                     @Override
@@ -95,9 +98,19 @@ public class perfil extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d("Debug", "Falha ao baixar avatar.");
+                        Log.d("Debug", "Falha ao baixar avatar. Aviso: " + e.toString());
                     }
                 });
+    }
+
+    private void setUserInfoView(){
+        ImageView avatar = findViewById(R.id.avatar_usuario);
+        TextView username = findViewById(R.id.titulo_perfil);
+        username.setText(mUserInfo.get("username").toString());
+        Bitmap avatarBmp = BitmapFactory.decodeFile(mAvatar.getPath());
+        RoundedBitmapDrawable rndBmp = RoundedBitmapDrawableFactory.create(getResources(), avatarBmp);
+        rndBmp.setCircular(true);
+        avatar.setImageDrawable(rndBmp);
     }
 
 }

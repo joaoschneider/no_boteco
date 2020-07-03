@@ -100,6 +100,7 @@ public class PrimeiraTela extends AppCompatActivity {
             case "ver_perfil":
                 Intent goperfil = new Intent(this, perfil.class);
                 goperfil.putExtra("from","primeiraTela");
+                goperfil.putExtra("uid", mAuth.getCurrentUser().getUid());
                 startActivity(goperfil, options.toBundle());
                 break;
             default :
