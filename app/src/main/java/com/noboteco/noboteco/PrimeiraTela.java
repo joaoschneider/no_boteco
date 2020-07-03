@@ -2,21 +2,10 @@ package com.noboteco.noboteco;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.transition.ChangeImageTransform;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.TransitionManager;
 import android.util.Log;
-import android.util.Pair;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -60,11 +49,6 @@ public class PrimeiraTela extends AppCompatActivity {
     }
 
     public void changeActivity(String destino){
-        /*
-            ActivityOptions.makeSceneTransitionAnimation() é o que de fato ativa a transição no Intent
-            através do options Bundle.
-             */
-        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
         switch(destino) {
             case "login_logout":
                 Intent gologin = new Intent(this, login.class);
