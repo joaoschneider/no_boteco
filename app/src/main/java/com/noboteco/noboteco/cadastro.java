@@ -21,6 +21,7 @@ public class cadastro extends AppCompatActivity {
     EditText mSenha;
     EditText mConfirmaSenha;
     FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +62,7 @@ public class cadastro extends AppCompatActivity {
                             .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                                 @Override
                                 public void onSuccess(AuthResult authResult) {
+                                    String uid = authResult.getUser().getUid();
                                     changeActivity();
                                 }
                             })
