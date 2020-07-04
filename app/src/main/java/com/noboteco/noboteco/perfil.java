@@ -1,9 +1,12 @@
 package com.noboteco.noboteco;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +34,10 @@ public class perfil extends AppCompatActivity {
     File mAvatar;
     DocumentSnapshot mUserInfo;
     FirebaseFirestore mFirestore;
+
+    private float x1, x2;
+    private GestureDetector gestureDetector;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,10 +57,10 @@ public class perfil extends AppCompatActivity {
     /*
     Método responsavel por mostrar aviso ao usuario apos login ou cadastro + login
      */
-    private void fromWhichActivity(String origem){
-        if(origem.equals("cadastro")){
+    private void fromWhichActivity(String origem) {
+        if (origem.equals("cadastro")) {
             Toast.makeText(perfil.this, "Sucesso ao efetuar cadastro! Você já está logado na plataforma, aproveite!", Toast.LENGTH_LONG).show();
-        }else if(origem.equals("login")){
+        } else if (origem.equals("login")) {
             Toast.makeText(perfil.this, "Aproveite a plataforma!", Toast.LENGTH_SHORT).show();
         }
     }
@@ -62,7 +69,7 @@ public class perfil extends AppCompatActivity {
     Método responsavel por buscar o documento do usuario no Firestore, onde estarão guardadas as
     informações de preferências e UID para buscar avatar
      */
-    private void getUserInfo(){
+    private void getUserInfo() {
         mFirestore.document("users/" + mUid).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -87,9 +94,9 @@ public class perfil extends AppCompatActivity {
     /*
     Método responsavel por buscar o avatar do usuário no Storage
      */
-    private void getUserAvatar(){
+    private void getUserAvatar() {
         mAvatar = new File(getCacheDir() + "avatar.jpg");
-        FirebaseStorage.getInstance().getReference("/"+mUid+".jpg").getFile(mAvatar)
+        FirebaseStorage.getInstance().getReference("/" + mUid + ".jpg").getFile(mAvatar)
                 .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
@@ -105,11 +112,12 @@ public class perfil extends AppCompatActivity {
                 });
     }
 
-    private void setUserNameView(){
+    private void setUserNameView() {
         TextView username = findViewById(R.id.titulo_perfil);
         username.setText(mUserInfo.get("username").toString());
     }
-    private void setUserAvatarView(){
+
+    private void setUserAvatarView() {
         ImageView avatar = findViewById(R.id.avatar_usuario);
         Bitmap avatarBmp = BitmapFactory.decodeFile(mAvatar.getPath());
         RoundedBitmapDrawable rndBmp = RoundedBitmapDrawableFactory.create(getResources(), avatarBmp);
@@ -117,5 +125,41 @@ public class perfil extends AppCompatActivity {
         avatar.setImageDrawable(rndBmp);
     }
 
+
+    // Métodos detecção de gesto
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent touchEvent) {
+
+
+        switch (touchEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                x1 = touchEvent.getX();
+
+                break;
+            // Fim do movimento
+            case MotionEvent.ACTION_UP:
+                x2 = touchEvent.getX();
+
+                // valor horizontal
+                if (x1 < x2) {
+                    // swipe esquerda
+                    Intent goqr = new Intent(this, leitor_cod_qr.class);
+                    startActivity(goqr);
+                    overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+                }
+                else {
+                    // swipe direita
+                    Intent gomenu = new Intent(this, menu_bar.class);
+                    startActivity(gomenu);
+                    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                }
+
+
+        }
+
+        return super.onTouchEvent(touchEvent);
+    }
 }
 

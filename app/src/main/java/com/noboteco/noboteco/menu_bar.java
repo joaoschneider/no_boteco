@@ -1,18 +1,17 @@
 package com.noboteco.noboteco;
 
-import android.content.Intent;
-import android.os.Bundle;
-
-import android.util.Log;
-
-import android.view.MotionEvent;
-
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+
 import com.google.firebase.auth.FirebaseAuth;
 
-public class leitor_cod_qr extends AppCompatActivity {
+
+public class menu_bar extends AppCompatActivity{
 
     private float x1,x2;
     FirebaseAuth mAuth;
@@ -20,19 +19,16 @@ public class leitor_cod_qr extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.leitor_cod_qr);
+        setContentView(R.layout.menu_bar);
         // Necessario para acesso perfil
         mAuth = FirebaseAuth.getInstance();
-
     }
-
 
     // Métodos detecção de gesto
 
 
     @Override
     public boolean onTouchEvent(MotionEvent touchEvent) {
-
 
         switch (touchEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -44,17 +40,19 @@ public class leitor_cod_qr extends AppCompatActivity {
                 // valor horizontal
                 if (x1 < x2) {
                     // swipe esquerda
-                }
-                else{
-                    // swipe direita
                     Intent goperfil = new Intent(this, perfil.class);
                     goperfil.putExtra("from","primeiraTela");
                     goperfil.putExtra("uid", mAuth.getCurrentUser().getUid());
                     startActivity(goperfil);
-                    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                    overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                 }
+                else {
+                    // swipe direita
 
-        }
+
+
+                }
+                }
 
         return super.onTouchEvent(touchEvent);
     }

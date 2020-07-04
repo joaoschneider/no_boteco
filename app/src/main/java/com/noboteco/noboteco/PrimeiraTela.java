@@ -6,11 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
-import android.transition.Slide;
+
 import android.util.Log;
-import android.view.Gravity;
+
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
+
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -28,7 +28,6 @@ public class PrimeiraTela extends AppCompatActivity {
         /*
         As definições de Transição devem ser geradas antes de informar ao View o layout a ser usado
          */
-        setTransitionAnimation();
 
         setContentView(R.layout.tela_entrada);
 
@@ -91,34 +90,24 @@ public class PrimeiraTela extends AppCompatActivity {
         switch(destino) {
             case "login":
                 Intent gologin = new Intent(this, login.class);
-                startActivity(gologin, options.toBundle());
+                startActivity(gologin);
+                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                 break;
             case "entrar_bar":
                 Intent gobar = new Intent(this, leitor_cod_qr.class);
-                startActivity(gobar, options.toBundle());
+                startActivity(gobar);
+                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                 break;
             case "ver_perfil":
                 Intent goperfil = new Intent(this, perfil.class);
                 goperfil.putExtra("from","primeiraTela");
                 goperfil.putExtra("uid", mAuth.getCurrentUser().getUid());
-                startActivity(goperfil, options.toBundle());
+                startActivity(goperfil);
+                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                 break;
             default :
                 Toast.makeText(this, "Atividade não implementada.", Toast.LENGTH_LONG).show();
         }
-    }
-
-    /*
-    Método responsavel por definir o tipo de Transição aplicada ao View, tanto na entrada quanto
-    na saída da Activity.
-     */
-    public void setTransitionAnimation(){
-        Slide slide = new Slide();
-        slide.setDuration(500L);
-        slide.setSlideEdge(Gravity.START);
-        slide.setInterpolator(new AccelerateDecelerateInterpolator());
-        getWindow().setEnterTransition(slide);
-        getWindow().setExitTransition(slide);
     }
 
     /*

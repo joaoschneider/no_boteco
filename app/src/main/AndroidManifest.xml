@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".cadastro"></activity>
+        <activity android:name=".cadastro" />
         <activity android:name=".login" />
         <activity android:name=".PrimeiraTela">
             <intent-filter>
@@ -24,6 +24,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".leitor_cod_qr">
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".menu_bar">
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
