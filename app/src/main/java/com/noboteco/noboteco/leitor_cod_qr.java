@@ -27,8 +27,7 @@ public class leitor_cod_qr extends AppCompatActivity {
     }
 
 
-    // Métodos detecção de gesto
-
+   // detecção de swipe
 
     @Override
     public boolean onTouchEvent(MotionEvent touchEvent) {

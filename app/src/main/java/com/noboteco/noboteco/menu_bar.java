@@ -24,8 +24,7 @@ public class menu_bar extends AppCompatActivity{
         mAuth = FirebaseAuth.getInstance();
     }
 
-    // Métodos detecção de gesto
-
+    // detecção de swipe
 
     @Override
     public boolean onTouchEvent(MotionEvent touchEvent) {

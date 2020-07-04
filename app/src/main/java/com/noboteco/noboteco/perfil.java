@@ -126,7 +126,8 @@ public class perfil extends AppCompatActivity {
     }
 
 
-    // Métodos detecção de gesto
+    // detecção de swipe
+
 
 
     @Override
