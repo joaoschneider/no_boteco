@@ -17,7 +17,7 @@
     <string name="btn_sair">Sair</string>
 
     <!-- Dialogo Nova Cerveja Favorita -->
-    <string name="label_escolha">Qual cerveja AMBEV você quer avaliar?</string>
+    <string name="label_escolha">Qual cerveja AMBEV você deseja avaliar?</string>
     <string name="label_nota">Quantas estrelas?</string>
     <string name="enviar">Avaliar</string>
 
