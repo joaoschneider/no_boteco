@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/vermelho"
     tools:context=".PrimeiraTela">
 
     <ImageView
@@ -15,14 +16,11 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
         android:scaleType="fitCenter"
-        android:tint="#21409a"
-        android:transitionName="logoAmbev"
+        android:src="@drawable/logo_vermelho"
         app:layout_constraintBottom_toTopOf="@+id/imageView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_ambev_logo"
-        tools:srcCompat="@drawable/ic_ambev_logo" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imageView2"
