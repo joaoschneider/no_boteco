@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class RVAdapter extends RecyclerView.Adapter<RVAdapter.FeedProfileViewHolder> {
+public class RVAdapter_Feed extends RecyclerView.Adapter<RVAdapter_Feed.FeedProfileViewHolder> {
     List<FeedProfile> mFeedProfiles;
 
-    RVAdapter(List<FeedProfile> profilesList){
+    RVAdapter_Feed(List<FeedProfile> profilesList){
         this.mFeedProfiles = profilesList;
     }
 

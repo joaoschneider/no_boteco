@@ -149,9 +149,9 @@ public class FeedBar extends AppCompatActivity {
      */
     private void setAndStartRecyclerView(){
         ViewGroup layout = (ViewGroup) getLayoutInflater().inflate(R.layout.feed_bar, null);
-        RVAdapter adapt = new RVAdapter(mProfileList);
+        RVAdapter_Feed adapt = new RVAdapter_Feed(mProfileList);
         mRecyclerView = layout.findViewById(R.id.feed_recycler);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
+        LinearLayoutManager llm = new LinearLayoutManager(this, RecyclerView.VERTICAL,false);
         mRecyclerView.setLayoutManager(llm);
         mRecyclerView.setAdapter(adapt);
         setContentView(layout);

@@ -29,24 +29,30 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
+import java.util.TimeZone;
 
 /*
 É essencial que toda a chamada para a activity Perfil seja acompanhada, no Intent, pelo UID do usuário. Isso garante que o avatar estará atualizado
@@ -78,6 +84,7 @@ public class perfil extends AppCompatActivity {
         getUserInfo();
         getUserAvatar();
         getGradedBeers();
+        getRecentActivity();
 
 
         //Configurar linear layout das cervejas favoritas
@@ -161,6 +168,9 @@ public class perfil extends AppCompatActivity {
         avatar.setImageDrawable(rndBmp);
     }
 
+    /*
+    Metodo responsavel por buscar as cervejas avaliadas pelo usuário no banco de dados
+     */
     private void getGradedBeers(){
         mFirestore.document("users/" + mUid + "/bebidas/cervejas").get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -182,20 +192,21 @@ public class perfil extends AppCompatActivity {
 
     }
 
+    /*
+    Metodo responsavel por configurar o recyclerview responsavel por mostrar as bebidas buscadas por getGradedBeers()
+     */
     private void setGradedBeersView(){
-        LinearLayout ll = mLayout_perfil.findViewById(R.id.listaFavoritas);
+        RecyclerView rv = mLayout_perfil.findViewById(R.id.rv_cervejas);
+        List<Integer> resourceIds = new ArrayList<>();
         if(!cervejas_avaliadas.isEmpty()){
-            Resources res = getResources();
             for(Map.Entry<String, Object> entry : cervejas_avaliadas.entrySet()){
-                ImageView favorita1 = new ImageView(this);
-                favorita1.setAdjustViewBounds(true);
-                favorita1.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                favorita1.setLayoutParams(params);
-                int drawableId = res.getIdentifier(entry.getKey(), "drawable", getPackageName());
-                favorita1.setImageResource(drawableId);
-                ll.addView(favorita1);
+                int resourceId = getResources().getIdentifier(entry.getKey(), "drawable", getPackageName());
+                resourceIds.add(resourceId);
             }
+            RVAdapter_Profile adapter = new RVAdapter_Profile(resourceIds);
+            LinearLayoutManager llm = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
+            rv.setLayoutManager(llm);
+            rv.setAdapter(adapter);
         }
         //sempre adicionar o botao "+" no Layout
         Button newFav = mLayout_perfil.findViewById(R.id.btn_newfav);
@@ -205,17 +216,60 @@ public class perfil extends AppCompatActivity {
                 addNewFavBeer();
             }
         });
-
-
         //Finalmente, trocar o View
         this.setContentView(mLayout_perfil);
     }
 
+    private void getRecentActivity(){
+        long agoraMillis = Calendar.getInstance(TimeZone.getTimeZone("America/Sao_Paulo")).getTimeInMillis();
+        long limite = agoraMillis - 7200000L;
+        Log.d("Debug", "UID: " + mUid);
+        Log.d("Debug", "Agora: " + agoraMillis + "\n" + "Ultimas 2 horas: " + (agoraMillis-7200000));
+        mFirestore.collection("bares/bar_do_jorge/users-online/" + mUid + "/recente")
+                .whereGreaterThan("horario", limite)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        Log.d("Debug", "Atividade recente buscada.");
+                        if(queryDocumentSnapshots.isEmpty()){
+                            setRecentActivityView(null);
+                        }else{
+                            List<String> recente = new ArrayList<>();
+                            for(DocumentSnapshot doc : queryDocumentSnapshots){
+                                recente.addAll(doc.getData().keySet());
+                            }
+                            setRecentActivityView(recente);
+                        }
+                    }
+                });
+    }
+
+    private void setRecentActivityView(List<String> recente){
+        if(recente == null){
+            Toast.makeText(perfil.this, "Nenhuma atividade nas últimas 2 horas.", Toast.LENGTH_LONG).show();
+        }else{
+            RecyclerView rv = mLayout_perfil.findViewById(R.id.rv_recente);
+            LinearLayoutManager llm = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
+            rv.setLayoutManager(llm);
+            List<Integer> resourceIds = new ArrayList<>();
+            for(String ceva : recente){
+                if(ceva.equals("horario")){
+                    continue;
+                }
+                ceva = ceva.toLowerCase();
+                int resourceId = getResources().getIdentifier(ceva, "drawable", getPackageName());
+                resourceIds.add(resourceId);
+            }
+            RVAdapter_Profile adapter = new RVAdapter_Profile(resourceIds);
+            rv.setAdapter(adapter);
+            mLayout_perfil.invalidate();
+        }
+    }
     /*
     Metodo responsavel por montar o dialogo de adicionar novo rating de cerveja e mostrar ao usuario
     Chamado por onClick do botao "+"
      */
-
     private void addNewFavBeer(){
         final Dialog dlg = new Dialog(this);
         View layout = getLayoutInflater().inflate(R.layout.dialog_newfavbeer,(ViewGroup) getCurrentFocus());
@@ -244,6 +298,7 @@ public class perfil extends AppCompatActivity {
         dlg.setContentView(layout);
         dlg.show();
     }
+
     /*
     Metodo responsavel por atualizar o banco de dados após o uso do diálogo criado por addNewFavBeer()
      */
