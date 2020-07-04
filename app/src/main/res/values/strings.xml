@@ -21,7 +21,7 @@
 
     <!-- Cervejas -->
     <string-array name="cervejas">
-        <item name="brahma">Brahma Chopp</item>
+        <item name="brahma">Brahma</item>
         <item name="skol">Skol</item>
         <item name="corona">Corona</item>
         <item name="patagonia">Patagonia</item>
