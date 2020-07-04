@@ -47,12 +47,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="@string/as_favoritas"
+        android:text="As favoritas:"
+        android:textColor="@color/branco"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/divider"
-        app:layout_constraintTop_toBottomOf="@+id/avatar_perfil" />
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
 
     <View
         android:id="@+id/divider2"
@@ -67,12 +68,15 @@
         android:id="@+id/listaFavoritas"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/divider2"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titulo_fav"
-        android:gravity="center_vertical">
+        app:layout_constraintVertical_bias="0.0">
 
     </LinearLayout>
 
@@ -80,9 +84,12 @@
         android:id="@+id/btn_newfav"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="6dp"
         android:layout_weight="1"
         android:background="@drawable/circular_button"
         android:text="+"
+        android:textColor="@color/branco"
         android:textSize="36sp"
         app:layout_constraintBottom_toTopOf="@+id/divider2"
         app:layout_constraintEnd_toEndOf="parent"
