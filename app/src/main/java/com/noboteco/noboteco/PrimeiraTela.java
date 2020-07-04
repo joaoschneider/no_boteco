@@ -94,7 +94,7 @@ public class PrimeiraTela extends AppCompatActivity {
                 overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                 break;
             case "entrar_bar":
-                Intent gobar = new Intent(this, leitor_cod_qr.class);
+                Intent gobar = new Intent(this, FeedBar.class);
                 startActivity(gobar);
                 overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                 break;
