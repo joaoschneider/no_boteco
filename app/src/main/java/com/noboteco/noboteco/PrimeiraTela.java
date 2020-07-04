@@ -94,12 +94,13 @@ public class PrimeiraTela extends AppCompatActivity {
                 startActivity(gologin, options.toBundle());
                 break;
             case "entrar_bar":
-                Intent gobar = new Intent(this, leitor_cod_qr.class);
+                Intent gobar = new Intent(this, FeedBar.class);
                 startActivity(gobar, options.toBundle());
                 break;
             case "ver_perfil":
                 Intent goperfil = new Intent(this, perfil.class);
                 goperfil.putExtra("from","primeiraTela");
+                goperfil.putExtra("uid", mAuth.getCurrentUser().getUid());
                 startActivity(goperfil, options.toBundle());
                 break;
             default :
