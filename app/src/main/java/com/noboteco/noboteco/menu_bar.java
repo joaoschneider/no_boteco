@@ -47,8 +47,9 @@ public class menu_bar extends AppCompatActivity{
                 }
                 else {
                     // swipe direita
-
-
+                    Intent gofeedbar = new Intent(this, FeedBar.class);
+                    startActivity(gofeedbar);
+                    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
 
                 }
                 }

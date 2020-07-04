@@ -1,9 +1,12 @@
 package com.noboteco.noboteco;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -40,6 +43,8 @@ public class FeedBar extends AppCompatActivity {
     private FirebaseFirestore mFirestore;
     private FirebaseAuth mAuth;
     private List<String> cachePaths;
+    private float x1, x2;
+    private GestureDetector gestureDetector;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -156,5 +161,38 @@ public class FeedBar extends AppCompatActivity {
 
     private void sozinhoNoBar(){
         Toast.makeText(this, "Voce está sozinho por aqui... Que tal mostrar o app para seus amigos?", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent touchEvent) {
+
+
+        switch (touchEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                x1 = touchEvent.getX();
+
+                break;
+            // Fim do movimento
+            case MotionEvent.ACTION_UP:
+                x2 = touchEvent.getX();
+
+                // valor horizontal
+                if (x1 < x2) {
+                    // swipe esquerda
+                    Intent gomenu = new Intent(this, menu_bar.class);
+                    startActivity(gomenu);
+                    overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+                }
+                else {
+                    // swipe direita
+                    Intent goqr = new Intent(this, leitor_cod_qr.class);
+                    startActivity(goqr);
+                    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                }
+
+
+        }
+
+        return super.onTouchEvent(touchEvent);
     }
 }

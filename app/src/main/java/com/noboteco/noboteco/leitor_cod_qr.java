@@ -43,6 +43,9 @@ public class leitor_cod_qr extends AppCompatActivity {
                 // valor horizontal
                 if (x1 < x2) {
                     // swipe esquerda
+                    Intent gofeedbar = new Intent(this, FeedBar.class);
+                    startActivity(gofeedbar);
+                    overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                 }
                 else{
                     // swipe direita
