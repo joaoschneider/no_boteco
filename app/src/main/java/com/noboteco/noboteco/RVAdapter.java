@@ -37,6 +37,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.FeedProfileViewHol
         holder.username.setText(mFeedProfiles.get(position).username);
         holder.noBarHa.setText(mFeedProfiles.get(position).noBarHa);
         holder.avatar.setImageDrawable(mFeedProfiles.get(position).avatar);
+        holder.fav_bebida.setVisibility(View.GONE);
     }
 
     @Override
@@ -49,6 +50,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.FeedProfileViewHol
         TextView username;
         TextView noBarHa;
         ImageView avatar;
+        ImageView fav_bebida;
 
         FeedProfileViewHolder(View itemView){
             super(itemView);
@@ -56,6 +58,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.FeedProfileViewHol
             username = itemView.findViewById(R.id.username);
             noBarHa = itemView.findViewById(R.id.noBarHa);
             avatar = itemView.findViewById(R.id.avatar);
+            fav_bebida = itemView.findViewById(R.id.fav_cerveja);
         }
     }
 }
