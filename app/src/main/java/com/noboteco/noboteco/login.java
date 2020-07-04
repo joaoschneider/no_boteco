@@ -73,7 +73,7 @@ public class login extends AppCompatActivity {
         switch(destino) {
             case "perfil":
                 Intent gohome = new Intent(this, perfil.class);
-                gohome.putExtra("from", "login");
+                gohome.putExtra("from", "login_edittext");
                 gohome.putExtra("uid", uid);
                 startActivity(gohome);
                 overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
