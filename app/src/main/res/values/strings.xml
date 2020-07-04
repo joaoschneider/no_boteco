@@ -12,4 +12,20 @@
 
     <!-- Perfil -->
     <string name="titulo_perfil">Meu perfil</string>
+    <string name="as_favoritas">AS FAVORITAS</string>
+
+    <!-- Dialogo Nova Cerveja Favorita -->
+    <string name="label_escolha">Qual cerveja AMBEV você quer avaliar?</string>
+    <string name="label_nota">Quantas estrelas?</string>
+    <string name="enviar">Avaliar</string>
+
+    <!-- Cervejas -->
+    <string-array name="cervejas">
+        <item name="brahma">Brahma Chopp</item>
+        <item name="skol">Skol</item>
+        <item name="corona">Corona</item>
+        <item name="patagonia">Patagonia</item>
+        <item name="colorado">Colorado</item>
+    </string-array>
+
 </resources>

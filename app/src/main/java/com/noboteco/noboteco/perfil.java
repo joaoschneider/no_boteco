@@ -1,18 +1,31 @@
 package com.noboteco.noboteco;
 
+import android.app.ActionBar;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
@@ -25,6 +38,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 /*
 É essencial que toda a chamada para a activity Perfil seja acompanhada, no Intent, pelo UID do usuário. Isso garante que o avatar estará atualizado
 no perfil e no feed do bar.
@@ -50,9 +66,26 @@ public class perfil extends AppCompatActivity {
         fromWhichActivity(origem);
         mFirestore = FirebaseFirestore.getInstance();
         getUserInfo();
+        Button newFav = findViewById(R.id.btn_newfav);
+        newFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addNewFavBeer();
+            }
+        });
+        //Configurar linear layout das cervejas favoritas
+        //Todo: implementar isso em um metodo que busque as favoritas no banco de dados e mostre elas na ordem de preferida para menos preferida
+        // da esquerda para direita
+        LinearLayout ll = findViewById(R.id.listaFavoritas);
+        ImageView favorita1 = new ImageView(this);
+        favorita1.setAdjustViewBounds(true);
+        favorita1.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        favorita1.setLayoutParams(params);
+        favorita1.setImageResource(R.drawable.brahma_teste);
+        ll.addView(favorita1);
 
     }
-
 
     /*
     Método responsavel por mostrar aviso ao usuario apos login ou cadastro + login
@@ -118,18 +151,14 @@ public class perfil extends AppCompatActivity {
     }
 
     private void setUserAvatarView() {
-        ImageView avatar = findViewById(R.id.avatar_usuario);
+        ImageView avatar = findViewById(R.id.avatar_perfil);
         Bitmap avatarBmp = BitmapFactory.decodeFile(mAvatar.getPath());
         RoundedBitmapDrawable rndBmp = RoundedBitmapDrawableFactory.create(getResources(), avatarBmp);
         rndBmp.setCircular(true);
         avatar.setImageDrawable(rndBmp);
     }
 
-
     // detecção de swipe
-
-
-
     @Override
     public boolean onTouchEvent(MotionEvent touchEvent) {
 
@@ -161,6 +190,59 @@ public class perfil extends AppCompatActivity {
         }
 
         return super.onTouchEvent(touchEvent);
+    }
+
+    /*
+    Metodo responsavel por montar o dialogo de adicionar novo rating de cerveja e mostrar ao usuario
+    Chamado por onClick do botao "+"
+     */
+    private void addNewFavBeer(){
+        final Dialog dlg = new Dialog(this);
+        View layout = getLayoutInflater().inflate(R.layout.dialog_newfavbeer,(ViewGroup) getCurrentFocus());
+        final RatingBar rtg = layout.findViewById(R.id.ratingBar);
+        final Spinner choices = layout.findViewById(R.id.select_fav);
+        final Button enviar = layout.findViewById(R.id.enviar_rating);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.cervejas, android.R.layout.simple_spinner_dropdown_item);
+        choices.setAdapter(adapter);
+        rtg.setIsIndicator(false);
+        rtg.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                ratingBar.setRating(rating);
+            }
+        });
+        enviar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                float rating = rtg.getRating();
+                String cerveja = choices.getSelectedItem().toString();
+                updateRatingOnDatabase(cerveja,rating);
+                dlg.dismiss();
+            }
+        });
+        dlg.setCancelable(true);
+        dlg.setContentView(layout);
+        dlg.show();
+    }
+
+    /*
+    Metodo responsavel por atualizar o banco de dados após o uso do diálogo criado por addNewFavBeer()
+     */
+    private void updateRatingOnDatabase(final String cerveja, final float rating){
+
+        mFirestore.document("users/" + mUid + "/bebidas/cervejas/").update(cerveja,rating)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(perfil.this, "Rating de " + cerveja + " atualizado para " + rating, Toast.LENGTH_LONG).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(perfil.this, "Falha ao atualizar informação.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
 
