@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -81,17 +82,13 @@ public class perfil extends AppCompatActivity {
         fromWhichActivity(origem);
         mFirestore = FirebaseFirestore.getInstance();
         cervejas_avaliadas = new HashMap<>();
+
+        //Buscar todas as informações necessarias para renderizar o perfil do usuário:
+        //username, avatar, cervejas avaliadas e atividade recente
         getUserInfo();
         getUserAvatar();
         getGradedBeers();
         getRecentActivity();
-
-
-        //Configurar linear layout das cervejas favoritas
-        //Todo: implementar isso em um metodo que busque as favoritas no banco de dados e mostre elas na ordem de preferida para menos preferida
-        // da esquerda para direita
-
-
     }
 
     /*
@@ -216,16 +213,40 @@ public class perfil extends AppCompatActivity {
                 addNewFavBeer();
             }
         });
+        Button sair = mLayout_perfil.findViewById(R.id.btn_sair);
+        sair.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Sair do bar
+                mFirestore.document("bares/bar_do_jorge/users_online/" + mUid).delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                FirebaseAuth auth = FirebaseAuth.getInstance();
+                                auth.signOut();
+                                Intent goHome = new Intent(perfil.this, PrimeiraTela.class);
+                                startActivity(goHome);
+                                finish();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(perfil.this, "Falha ao sair do bar.", Toast.LENGTH_LONG).show();
+                            }
+                        });
+            }
+        });
         //Finalmente, trocar o View
         this.setContentView(mLayout_perfil);
     }
 
     private void getRecentActivity(){
         long agoraMillis = Calendar.getInstance(TimeZone.getTimeZone("America/Sao_Paulo")).getTimeInMillis();
-        long limite = agoraMillis - 7200000L;
+        long limite = 0;
         Log.d("Debug", "UID: " + mUid);
         Log.d("Debug", "Agora: " + agoraMillis + "\n" + "Ultimas 2 horas: " + (agoraMillis-7200000));
-        mFirestore.collection("bares/bar_do_jorge/users-online/" + mUid + "/recente")
+        mFirestore.collection("bares/bar_do_jorge/users_online/" + mUid + "/recente")
                 .whereGreaterThan("horario", limite)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {

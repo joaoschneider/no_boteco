@@ -14,6 +14,7 @@
     <string name="titulo_perfil">Meu perfil</string>
     <string name="as_favoritas">AS FAVORITAS</string>
     <string name="recente">ATIVIDADE RECENTE</string>
+    <string name="btn_sair">Sair</string>
 
     <!-- Dialogo Nova Cerveja Favorita -->
     <string name="label_escolha">Qual cerveja AMBEV você quer avaliar?</string>
