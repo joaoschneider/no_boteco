@@ -72,7 +72,7 @@ public class PrimeiraTela extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(login_logoutbtn.getText().toString().equals("Acessar")) {
-                    changeActivity("login");
+                    changeActivity("login_edittext");
                 }else{
                     mAuth.signOut();
                     Toast.makeText(PrimeiraTela.this, "Até logo!", Toast.LENGTH_LONG).show();
@@ -88,7 +88,7 @@ public class PrimeiraTela extends AppCompatActivity {
              */
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
         switch(destino) {
-            case "login":
+            case "login_edittext":
                 Intent gologin = new Intent(this, login.class);
                 startActivity(gologin);
                 overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
@@ -111,12 +111,12 @@ public class PrimeiraTela extends AppCompatActivity {
     }
 
     /*
-    Método responsavel por mostrar aviso ao usuario apos login ou cadastro + login
+    Método responsavel por mostrar aviso ao usuario apos login_edittext ou cadastro + login_edittext
      */
     public void fromWhichActivity(String origem){
         if(origem.equals("cadastro")){
             Toast.makeText(PrimeiraTela.this, "Sucesso ao efetuar cadastro! Você já está logado na plataforma, aproveite!", Toast.LENGTH_LONG).show();
-        }else if(origem.equals("login")){
+        }else if(origem.equals("login_edittext")){
             Toast.makeText(PrimeiraTela.this, "Aproveite a plataforma!", Toast.LENGTH_SHORT).show();
         }
     }

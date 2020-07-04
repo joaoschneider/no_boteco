@@ -92,12 +92,12 @@ public class perfil extends AppCompatActivity {
     }
 
     /*
-    Método responsavel por mostrar aviso ao usuario apos login ou cadastro + login
+    Método responsavel por mostrar aviso ao usuario apos login_edittext ou cadastro + login_edittext
      */
     private void fromWhichActivity(String origem) {
         if (origem.equals("cadastro")) {
             Toast.makeText(perfil.this, "Sucesso ao efetuar cadastro! Você já está logado na plataforma, aproveite!", Toast.LENGTH_LONG).show();
-        } else if (origem.equals("login")) {
+        } else if (origem.equals("login_edittext")) {
             Toast.makeText(perfil.this, "Aproveite a plataforma!", Toast.LENGTH_SHORT).show();
         }
     }
