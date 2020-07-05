@@ -37,7 +37,7 @@ public class RVAdapter_Feed extends RecyclerView.Adapter<RVAdapter_Feed.FeedProf
         holder.username.setText(mFeedProfiles.get(position).username);
         holder.noBarHa.setText(mFeedProfiles.get(position).noBarHa);
         holder.avatar.setImageDrawable(mFeedProfiles.get(position).avatar);
-        holder.fav_bebida.setVisibility(View.GONE);
+        holder.fav_bebida.setImageDrawable(mFeedProfiles.get(position).fav_cerveja);
     }
 
     @Override
