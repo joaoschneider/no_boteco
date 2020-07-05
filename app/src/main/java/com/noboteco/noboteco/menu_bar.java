@@ -40,7 +40,7 @@ public class menu_bar extends AppCompatActivity{
                 if (x1 < x2) {
                     // swipe esquerda
                     Intent goperfil = new Intent(this, perfil.class);
-                    goperfil.putExtra("from","primeiraTela");
+                    goperfil.putExtra("from","menu_bar");
                     goperfil.putExtra("uid", mAuth.getCurrentUser().getUid());
                     startActivity(goperfil);
                     overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);

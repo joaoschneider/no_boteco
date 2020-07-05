@@ -68,17 +68,30 @@ public class FeedBar extends AppCompatActivity {
         mProfileList = new LinkedList<>();
         cachePaths = new LinkedList<>();
         avatars = new LinkedList<>();
-
-        loginToBar();
+        String origem;
+        String bar;
+        if(getIntent().getStringExtra("from") != null){
+            origem = getIntent().getStringExtra("from");
+            if(origem.equals("leitor_qr")) {
+                Log.d("Debug", "Veio do Leitor. Logando atraves do link");
+                bar = getIntent().getStringExtra("nome_bar");
+                loginToBar(bar);
+            }
+        }else{
+            //Verificar se o usuario está logado em algum bar
+            checkIsUserLogged();
+        }
     }
 
     /*
     Metodo responsavel por definir os dados do usuario par ao login (uid, username e cerveja favorita)
     */
-    private void loginToBar(){
+    private void loginToBar(String nomeBar){
         String uid = mAuth.getUid();
         final Map<String,String> dadosParaLogin = new HashMap<>();
         dadosParaLogin.put("uid", uid);
+        dadosParaLogin.put("bar",nomeBar);
+        mFirestore.document("users/" + uid).update("noBar", dadosParaLogin.get("bar"));
         mFirestore.document("users/" + uid).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -113,15 +126,44 @@ public class FeedBar extends AppCompatActivity {
                 });
     }
 
+    private void checkIsUserLogged(){
+        mFirestore.document("users/" + mAuth.getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        try{
+                            String usuarioLogadoEm = documentSnapshot.get("noBar").toString();
+                            getUidsOnline(usuarioLogadoEm);
+                        }catch(NullPointerException e){
+                            //Usuario nao esta logado, enviar para leitor qr
+                            Intent intent = new Intent(FeedBar.this, leitor_cod_qr.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Debug", "Falha ao verificar se usuario esta logado. Indo para leitor_qr");
+                        Intent intent = new Intent(FeedBar.this, leitor_cod_qr.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+    }
+
     /*
     Criar documento do usuario no users_online do bar de modo que ele esteja visivel para outros usuários
      */
     private void createUserDocumentAtBar(Map<String,String> dadosUserIn){
-        mFirestore.document("bares/bar_do_jorge/users_online/" + mAuth.getUid()).set(dadosUserIn)
+        final String linkBar = dadosUserIn.get("bar");
+        mFirestore.document(linkBar + "/" + mAuth.getUid()).set(dadosUserIn)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        getUidsOnline();
+                        getUidsOnline(linkBar);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -135,28 +177,12 @@ public class FeedBar extends AppCompatActivity {
     /*
     Metodo responsavel por preparar a lista de dados passada para o Adapter do RecyclerView
      */
-    private void prepareProfilesList(){
-        Log.d("Debug", "Quantos usuarios online? " + avatars.size());
-        int i=0;
-        for(String username : usersNoBar){
-            mProfileList.add(new FeedProfile(username, "1 hora", avatars.get(i), drawablesDaCeva.get(i)));
-            i+=1;
-            Log.d("Debug", "Perfil de Feed do usuario criado");
-        }
-        for(FeedProfile p : mProfileList){
-            Log.d("Debug", p.username);
-            Log.d("Debug", p.avatar.toString());
-            Log.d("Debug", p.fav_cerveja.toString());
-        }
-        Log.d("Debug", mProfileList.toString());
-        setAndStartRecyclerView();
-    }
 
-    private void getUidsOnline() {
+    private void getUidsOnline(String bar) {
         uidsNoBar = new LinkedList<>();
         usersNoBar = new LinkedList<>();
         cevasNoBar = new LinkedList<>();
-        mFirestore.collection("/bares/bar_do_jorge/users_online").get()
+        mFirestore.collection(bar).get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -261,8 +287,10 @@ public class FeedBar extends AppCompatActivity {
                 }
                 else {
                     // swipe direita
-                    Intent goqr = new Intent(this, leitor_cod_qr.class);
-                    startActivity(goqr);
+                    Intent goperfil = new Intent(this, perfil.class);
+                    goperfil.putExtra("uid", mAuth.getUid());
+                    goperfil.putExtra("from", "feed");
+                    startActivity(goperfil);
                     overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                 }
 
