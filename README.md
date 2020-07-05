@@ -13,7 +13,7 @@ Bibliotecas de terceiros utilizadas:
 
 # Sobre os bancos de dados
 
-O aplicativo possui acessa e mantém dois bancos de dados:
+O aplicativo acessa e mantém dois bancos de dados:
 - Firebase Firestore: responsável por guardar as preferências dos usuários, bem como guardar a informação sobre usuários online em determinado bar. Além disso, o documento do bar também possui uma coleção 'menu', responsável por repassar aos usuários a quantidade disponível de cada cerveja AMBEV que o bar possui.
 
 - Firebase Storage: responsável por salvar as imagens de perfil dos usuários.
