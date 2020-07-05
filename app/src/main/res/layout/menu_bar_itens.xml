@@ -63,6 +63,7 @@
                 android:layout_marginStart="184dp"
                 android:layout_marginTop="20dp"
                 android:text="Quantidade:"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/fotoceva"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>

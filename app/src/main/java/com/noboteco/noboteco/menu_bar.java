@@ -106,7 +106,7 @@ public class menu_bar extends AppCompatActivity {
                                 Log.d("Debug","info" + doc.get("qtd") + doc.get("name") + getResources().getIdentifier((String) doc.get("name"), "drawable", getPackageName()));
                                 cervejas.add(new FeedMenu((String) doc.get("qtd"),
                                                 (String) doc.get("name"),
-                                                getResources().getIdentifier((String) doc.get("name"), "drawable", getPackageName())
+                                                getResources().getIdentifier( ((String) doc.get("name")).toLowerCase(), "drawable", getPackageName())
                                         )
                                 );
                             }
