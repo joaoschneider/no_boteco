@@ -2,6 +2,7 @@ package com.noboteco.noboteco;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -17,13 +18,13 @@ class FeedProfile {
     public RoundedBitmapDrawable avatar;
     public String username;
     public String noBarHa;
-    File _avatarCache;
+    RoundedBitmapDrawable fav_cerveja;
 
-    FeedProfile(String un, String nbh, RoundedBitmapDrawable d){
-        this.avatar = d;
+    FeedProfile(String un, String nbh, RoundedBitmapDrawable avatar ,RoundedBitmapDrawable fav_cerveja){
+        this.avatar = avatar;
         this.username = un;
         this.noBarHa = nbh;
-
+        this.fav_cerveja = fav_cerveja;
     }
 
 }

@@ -37,6 +37,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -48,6 +50,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -81,7 +84,7 @@ public class perfil extends AppCompatActivity {
         assert origem != null;
         fromWhichActivity(origem);
         mFirestore = FirebaseFirestore.getInstance();
-        cervejas_avaliadas = new HashMap<>();
+        cervejas_avaliadas = new LinkedHashMap<>();
 
         //Buscar todas as informações necessarias para renderizar o perfil do usuário:
         //username, avatar, cervejas avaliadas e atividade recente
@@ -166,15 +169,22 @@ public class perfil extends AppCompatActivity {
     }
 
     /*
-    Metodo responsavel por buscar as cervejas avaliadas pelo usuário no banco de dados
+    Metodo responsavel por buscar as cervejas avaliadas pelo usuário no banco de dados, na ordem da melhor avaliada para pior
      */
     private void getGradedBeers(){
-        mFirestore.document("users/" + mUid + "/bebidas/cervejas").get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        mFirestore.collection("users/" + mUid + "/bebidas")
+                .orderBy("nota", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        cervejas_avaliadas = documentSnapshot.getData();
-                        Log.d("Debug ","Cervejas buscadas:" + cervejas_avaliadas.toString());
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshot) {
+                        if(!queryDocumentSnapshot.isEmpty()) {
+                            int i=0;
+                            for(DocumentSnapshot doc : queryDocumentSnapshot){
+                                Log.d("Debug", "Cerveja " + doc.getId());
+                                cervejas_avaliadas.put(doc.getId(), doc.get("nota"));
+                            }
+                        }
                         setGradedBeersView();
                     }
                 })
@@ -197,6 +207,7 @@ public class perfil extends AppCompatActivity {
         List<Integer> resourceIds = new ArrayList<>();
         if(!cervejas_avaliadas.isEmpty()){
             for(Map.Entry<String, Object> entry : cervejas_avaliadas.entrySet()){
+                Log.d("Debug", "Cerveja " + entry.getKey());
                 int resourceId = getResources().getIdentifier(entry.getKey(), "drawable", getPackageName());
                 resourceIds.add(resourceId);
             }
@@ -324,7 +335,9 @@ public class perfil extends AppCompatActivity {
     Metodo responsavel por atualizar o banco de dados após o uso do diálogo criado por addNewFavBeer()
      */
     private void updateRatingOnDatabase(final String cerveja, final float rating){
-        mFirestore.document("users/" + mUid + "/bebidas/cervejas/").update(cerveja,rating)
+        Map<String, Float> dados = new HashMap<>();
+        dados.put("nota", rating);
+        mFirestore.document("users/" + mUid + "/bebidas/" + cerveja).set(dados)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -335,8 +348,10 @@ public class perfil extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(perfil.this, "Falha ao atualizar informação.", Toast.LENGTH_SHORT).show();
+                        Log.d("Debug", "Erro: " + e.toString());
                     }
                 });
+
     }
 
 
