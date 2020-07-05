@@ -62,14 +62,18 @@ public class menu_bar extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent touchEvent) {
+        final int SWIPE_THRESHOLD = 150;
 
         switch (touchEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 x1 = touchEvent.getX();
+
                 break;
             // Fim do movimento
             case MotionEvent.ACTION_UP:
                 x2 = touchEvent.getX();
+
+                if((Math.abs(x1-x2)) > SWIPE_THRESHOLD )
                 // valor horizontal
                 if (x1 < x2) {
                     // swipe esquerda

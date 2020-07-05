@@ -276,7 +276,7 @@ public class FeedBar extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent touchEvent) {
-
+        final int SWIPE_THRESHOLD = 150;
 
         switch (touchEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -286,6 +286,8 @@ public class FeedBar extends AppCompatActivity {
             // Fim do movimento
             case MotionEvent.ACTION_UP:
                 x2 = touchEvent.getX();
+
+                if((Math.abs(x1-x2)) > SWIPE_THRESHOLD )
 
                 // valor horizontal
                 if (x1 < x2) {
