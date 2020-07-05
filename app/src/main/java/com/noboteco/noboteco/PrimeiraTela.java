@@ -9,8 +9,10 @@ import android.os.Bundle;
 
 import android.util.Log;
 
+import android.view.Gravity;
 import android.view.View;
 
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -25,11 +27,9 @@ public class PrimeiraTela extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-        As definições de Transição devem ser geradas antes de informar ao View o layout a ser usado
-         */
 
-        setContentView(R.layout.tela_entrada);
+        //Tela de carregamento
+        setContentView(R.layout.carregando);
 
         //Controle de estado de acesso do usuário: está logado ou não?
         mAuth = FirebaseAuth.getInstance();
@@ -46,39 +46,13 @@ public class PrimeiraTela extends AppCompatActivity {
             }
         });
 
-        meuperfilbtn = findViewById(R.id.meu_perfil);
-        entrarbarbtn = findViewById(R.id.entrar_no_bar);
-        login_logoutbtn = findViewById(R.id.login_logout);
+
 
         //Verificar se a origem da chamada de Primeira Tela é Login ou Cadastro
         String origem = getIntent().getStringExtra("from");
         if(origem != null){
             fromWhichActivity(origem);
         }
-
-        meuperfilbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeActivity("ver_perfil");
-            }
-        });
-        entrarbarbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeActivity("entrar_bar");
-            }
-        });
-        login_logoutbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(login_logoutbtn.getText().toString().equals("Acessar")) {
-                    changeActivity("login_edittext");
-                }else{
-                    mAuth.signOut();
-                    Toast.makeText(PrimeiraTela.this, "Até logo!", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
     }
 
     public void changeActivity(String destino){
@@ -123,13 +97,28 @@ public class PrimeiraTela extends AppCompatActivity {
 
     public void organizarLayoutBaseadoNoLogin(boolean isLogado){
         if(isLogado){
-            login_logoutbtn.setText("Sair");
-            meuperfilbtn.setVisibility(View.VISIBLE);
-            entrarbarbtn.setVisibility(View.VISIBLE);
+            //Usuario ja esta logado, então envia-lo para FeedBar
+            //La, é feita a verificacao se ele está no bar ou nao. Se nao estiver, aparece o leitor de QR
+            Intent goFeed = new Intent(this, FeedBar.class);
+            startActivity(goFeed);
+            finish();
         }else{
-            login_logoutbtn.setText("Acessar");
-            meuperfilbtn.setVisibility(View.GONE);
-            entrarbarbtn.setVisibility(View.GONE);
+            ViewGroup layout = (ViewGroup) getLayoutInflater().inflate(R.layout.tela_entrada, null);
+            login_logoutbtn = layout.findViewById(R.id.login_logout);
+            login_logoutbtn.setText(R.string.acessar);
+            login_logoutbtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(login_logoutbtn.getText().toString().equals("Acessar")) {
+                        changeActivity("login_edittext");
+                    }else{
+                        mAuth.signOut();
+                        Toast.makeText(PrimeiraTela.this, "Até logo!", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+            login_logoutbtn.setGravity(Gravity.CENTER);
+            setContentView(layout);
         }
     }
 

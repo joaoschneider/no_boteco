@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -54,7 +55,7 @@ public class FeedBar extends AppCompatActivity {
     private float x1, x2;
     private GestureDetector gestureDetector;
     private List<FeedProfile> mAdapter;
-
+    private String bar;
     private static Bundle mRecyclerState;
 
     @Override
@@ -69,7 +70,7 @@ public class FeedBar extends AppCompatActivity {
         cachePaths = new LinkedList<>();
         avatars = new LinkedList<>();
         String origem;
-        String bar;
+
         if(getIntent().getStringExtra("from") != null){
             origem = getIntent().getStringExtra("from");
             if(origem.equals("leitor_qr")) {
@@ -133,8 +134,8 @@ public class FeedBar extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         try{
-                            String usuarioLogadoEm = documentSnapshot.get("noBar").toString();
-                            getUidsOnline(usuarioLogadoEm);
+                            bar = documentSnapshot.get("noBar").toString();
+                            getUidsOnline(bar);
                         }catch(NullPointerException e){
                             //Usuario nao esta logado, enviar para leitor qr
                             Intent intent = new Intent(FeedBar.this, leitor_cod_qr.class);
@@ -158,7 +159,7 @@ public class FeedBar extends AppCompatActivity {
     Criar documento do usuario no users_online do bar de modo que ele esteja visivel para outros usuários
      */
     private void createUserDocumentAtBar(Map<String,String> dadosUserIn){
-        final String linkBar = dadosUserIn.get("bar");
+        final String linkBar = dadosUserIn.get("bar") + "/users_online";
         mFirestore.document(linkBar + "/" + mAuth.getUid()).set(dadosUserIn)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -182,7 +183,7 @@ public class FeedBar extends AppCompatActivity {
         uidsNoBar = new LinkedList<>();
         usersNoBar = new LinkedList<>();
         cevasNoBar = new LinkedList<>();
-        mFirestore.collection(bar).get()
+        mFirestore.collection(bar + "/users_online").get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -254,6 +255,14 @@ public class FeedBar extends AppCompatActivity {
     private void setAndStartRecyclerView(){
         ViewGroup layout = (ViewGroup) getLayoutInflater().inflate(R.layout.feed_bar, null);
         RVAdapter_Feed adapt = new RVAdapter_Feed(mProfileList);
+        final TextView mNomeBar = layout.findViewById(R.id.nome_bar);
+        mFirestore.document(bar).get()
+        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                mNomeBar.setText(documentSnapshot.get("nome").toString().toUpperCase());
+            }
+        });
         mRecyclerView = layout.findViewById(R.id.feed_recycler);
         LinearLayoutManager llm = new LinearLayoutManager(this, RecyclerView.VERTICAL,false);
         mRecyclerView.setLayoutManager(llm);
