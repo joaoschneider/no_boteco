@@ -109,13 +109,15 @@ public class perfil extends AppCompatActivity {
                 isUserAtBar = false;
                 break;
             case "feed":
+            case "menu_bar":
+            case "leitor_qr":
+                //Usuario ja logado no bar
+                //Usuario ja logado no bar, evitar que volte para o qrcode
                 //Usuario ja logado no bar, evitar que volte para o qrcode no swipe para esquerda
                 isUserAtBar = true;
                 break;
-            case "menu_bar":
-                //Usuario ja logado no bar, evitar que volte para o qrcode
-                isUserAtBar = true;
-                break;
+            default:
+                isUserAtBar = false;
         }
     }
 

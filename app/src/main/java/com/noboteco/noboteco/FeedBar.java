@@ -159,8 +159,8 @@ public class FeedBar extends AppCompatActivity {
     Criar documento do usuario no users_online do bar de modo que ele esteja visivel para outros usuários
      */
     private void createUserDocumentAtBar(Map<String,String> dadosUserIn){
-        final String linkBar = dadosUserIn.get("bar") + "/users_online";
-        mFirestore.document(linkBar + "/" + mAuth.getUid()).set(dadosUserIn)
+        final String linkBar = dadosUserIn.get("bar");
+        mFirestore.document(linkBar + "/users_online/" + mAuth.getUid()).set(dadosUserIn)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
