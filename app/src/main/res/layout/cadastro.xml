@@ -89,6 +89,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
         android:text="Concluir"
+        android:background="@drawable/button_shape"
         app:layout_constraintEnd_toEndOf="@+id/edtpasswordconfirm"
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="@+id/edtpasswordconfirm"

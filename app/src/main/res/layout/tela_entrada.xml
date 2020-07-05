@@ -22,6 +22,7 @@
 
     <Button
         android:id="@+id/login_logout"
+        android:background="@drawable/button_shape"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:text="@string/acessar"
