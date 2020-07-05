@@ -69,6 +69,7 @@ public class perfil extends AppCompatActivity {
     FirebaseFirestore mFirestore;
     ViewGroup mLayout_perfil;
     Map<String, Object> cervejas_avaliadas;
+    private boolean isUserAtBar;
 
     private float x1, x2;
     private GestureDetector gestureDetector;
@@ -98,10 +99,25 @@ public class perfil extends AppCompatActivity {
     Método responsavel por mostrar aviso ao usuario apos login_edittext ou cadastro + login_edittext
      */
     private void fromWhichActivity(String origem) {
-        if (origem.equals("cadastro")) {
-            Toast.makeText(perfil.this, "Sucesso ao efetuar cadastro! Você já está logado na plataforma, aproveite!", Toast.LENGTH_LONG).show();
-        } else if (origem.equals("login_edittext")) {
-            Toast.makeText(perfil.this, "Aproveite a plataforma!", Toast.LENGTH_SHORT).show();
+        switch (origem) {
+            case "cadastro":
+                Toast.makeText(perfil.this, "Sucesso ao efetuar cadastro! Você já está logado na plataforma, aproveite!", Toast.LENGTH_LONG).show();
+                isUserAtBar = false;
+                break;
+            case "login_edittext":
+                Toast.makeText(perfil.this, "Aproveite a plataforma!", Toast.LENGTH_SHORT).show();
+                isUserAtBar = false;
+                break;
+            case "feed":
+            case "menu_bar":
+            case "leitor_qr":
+                //Usuario ja logado no bar
+                //Usuario ja logado no bar, evitar que volte para o qrcode
+                //Usuario ja logado no bar, evitar que volte para o qrcode no swipe para esquerda
+                isUserAtBar = true;
+                break;
+            default:
+                isUserAtBar = false;
         }
     }
 
@@ -246,6 +262,7 @@ public class perfil extends AppCompatActivity {
                                 Toast.makeText(perfil.this, "Falha ao sair do bar.", Toast.LENGTH_LONG).show();
                             }
                         });
+                mFirestore.document("users/" + mUid).update("noBar", null);
             }
         });
         //Finalmente, trocar o View
@@ -373,15 +390,22 @@ public class perfil extends AppCompatActivity {
                 // valor horizontal
                 if (x1 < x2) {
                     // swipe esquerda
-                    Intent goqr = new Intent(this, leitor_cod_qr.class);
-                    startActivity(goqr);
-                    overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+                    if(!isUserAtBar) {
+                        Intent goqr = new Intent(this, leitor_cod_qr.class);
+                        startActivity(goqr);
+                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                    }else{
+                        Intent gofeed = new Intent(this, FeedBar.class);
+                        startActivity(gofeed);
+                    }
                 }
                 else {
                     // swipe direita
-                    Intent gomenu = new Intent(this, menu_bar.class);
-                    startActivity(gomenu);
-                    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                    if(isUserAtBar) {
+                        Intent gomenu = new Intent(this, menu_bar.class);
+                        startActivity(gomenu);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    }
                 }
 
 

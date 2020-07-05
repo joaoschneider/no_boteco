@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -52,6 +54,9 @@ public class FeedBar extends AppCompatActivity {
     private List<String> cachePaths;
     private float x1, x2;
     private GestureDetector gestureDetector;
+    private List<FeedProfile> mAdapter;
+    private String bar;
+    private static Bundle mRecyclerState;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,19 +69,30 @@ public class FeedBar extends AppCompatActivity {
         mProfileList = new LinkedList<>();
         cachePaths = new LinkedList<>();
         avatars = new LinkedList<>();
+        String origem;
 
-        loginToBar();
-
-
+        if(getIntent().getStringExtra("from") != null){
+            origem = getIntent().getStringExtra("from");
+            if(origem.equals("leitor_qr")) {
+                Log.d("Debug", "Veio do Leitor. Logando atraves do link");
+                bar = getIntent().getStringExtra("nome_bar");
+                loginToBar(bar);
+            }
+        }else{
+            //Verificar se o usuario está logado em algum bar
+            checkIsUserLogged();
+        }
     }
 
     /*
     Metodo responsavel por definir os dados do usuario par ao login (uid, username e cerveja favorita)
     */
-    private void loginToBar(){
+    private void loginToBar(String nomeBar){
         String uid = mAuth.getUid();
         final Map<String,String> dadosParaLogin = new HashMap<>();
         dadosParaLogin.put("uid", uid);
+        dadosParaLogin.put("bar",nomeBar);
+        mFirestore.document("users/" + uid).update("noBar", dadosParaLogin.get("bar"));
         mFirestore.document("users/" + uid).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -111,15 +127,44 @@ public class FeedBar extends AppCompatActivity {
                 });
     }
 
+    private void checkIsUserLogged(){
+        mFirestore.document("users/" + mAuth.getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        try{
+                            bar = documentSnapshot.get("noBar").toString();
+                            getUidsOnline(bar);
+                        }catch(NullPointerException e){
+                            //Usuario nao esta logado, enviar para leitor qr
+                            Intent intent = new Intent(FeedBar.this, leitor_cod_qr.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Debug", "Falha ao verificar se usuario esta logado. Indo para leitor_qr");
+                        Intent intent = new Intent(FeedBar.this, leitor_cod_qr.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+    }
+
     /*
     Criar documento do usuario no users_online do bar de modo que ele esteja visivel para outros usuários
      */
     private void createUserDocumentAtBar(Map<String,String> dadosUserIn){
-        mFirestore.document("bares/bar_do_jorge/users_online/" + mAuth.getUid()).set(dadosUserIn)
+        final String linkBar = dadosUserIn.get("bar");
+        mFirestore.document(linkBar + "/users_online/" + mAuth.getUid()).set(dadosUserIn)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        getUsersOnline();
+                        getUidsOnline(linkBar);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -133,97 +178,75 @@ public class FeedBar extends AppCompatActivity {
     /*
     Metodo responsavel por preparar a lista de dados passada para o Adapter do RecyclerView
      */
-    private void prepareProfilesList(){
-        Log.d("Debug", "Quantos usuarios online? " + avatars.size());
-        int i=0;
-        for(String username : usersNoBar){
-            mProfileList.add(new FeedProfile(username, "1 hora", avatars.get(i), drawablesDaCeva.get(i)));
-            i+=1;
-            Log.d("Debug", "Perfil de Feed do usuario criado");
-        }
-        Log.d("Debug", mProfileList.toString());
-        setAndStartRecyclerView();
-    }
 
-    /*
-    Metodo responsavel por verificar quais usuarios estão online no bar que o usuário acessou
-     */
-    private void getUsersOnline(){
-        uidsNoBar = new ArrayList<>();
-        usersNoBar = new ArrayList<>();
-        cevasNoBar = new ArrayList<>();
-        mFirestore.collection("/bares/bar_do_jorge/users_online").get()
-            .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    for(DocumentSnapshot doc : queryDocumentSnapshots){
-                        //Evitar visualizar a si mesmo no feed
-                        if(!doc.get("uid").toString().equals(mAuth.getCurrentUser().getUid())) {
-                            uidsNoBar.add(Objects.requireNonNull(doc.get("uid")).toString());
-                            usersNoBar.add(Objects.requireNonNull(doc.get("username")).toString());
-                            cevasNoBar.add(Objects.requireNonNull(doc.get("favorita")).toString());
-                            Log.d("Debug", "Usuario online detectado");
-                        }
-                    }
-                    //Verificar se existe alguem no bar além do usuário
-                    if(!uidsNoBar.isEmpty()) {
-                        //Se sim, buscar avatares
-                        getUserAvatars();
-                    }else{
-                        //Se nao, está sozinho... avisar
-                        sozinhoNoBar();
-                    }
-                }
-            });
-    }
-
-    /*
-    Metodo responsavel por buscar os avatares dos usuarios que estao no bar para visualizacao no feed
-     */
-    private void getUserAvatars(){
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        drawablesDaCeva = new LinkedList<>();
-        for(String ceva : cevasNoBar){
-            int drawableId = getResources().getIdentifier(ceva, "drawable", getPackageName());
-            Bitmap bmp = BitmapFactory.decodeResource(getResources(), drawableId);
-            RoundedBitmapDrawable rnd = RoundedBitmapDrawableFactory.create(getResources(), bmp);
-            rnd.setCircular(true);
-            drawablesDaCeva.add(rnd);
-        }
-        for(String uid : uidsNoBar){
-            final File tempAvatar = new File(getCacheDir() + uid + "_tempAvatar.jpg");
-            storage.getReference("/" + uid + ".jpg").getFile(tempAvatar)
-                    .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                            Log.d("Debug", tempAvatar.getName());
-                            cachePaths.add(tempAvatar.getPath());
-                            if(uidsNoBar.size() == cachePaths.size()){
-                                saveAvatarToList();
+    private void getUidsOnline(String bar) {
+        uidsNoBar = new LinkedList<>();
+        usersNoBar = new LinkedList<>();
+        cevasNoBar = new LinkedList<>();
+        mFirestore.collection(bar + "/users_online").get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for(DocumentSnapshot doc : queryDocumentSnapshots){
+                            //Evitar visualizar a si mesmo no feed
+                            if(!doc.get("uid").toString().equals(mAuth.getCurrentUser().getUid())) {
+                                uidsNoBar.add(Objects.requireNonNull(doc.get("uid")).toString());
+                                usersNoBar.add(Objects.requireNonNull(doc.get("username")).toString());
+                                cevasNoBar.add(Objects.requireNonNull(doc.get("favorita")).toString());
+                                Log.d("Debug", "Usuario online detectado");
                             }
                         }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.d("Debug", "Falha ao buscar avatar.");
+                        if(uidsNoBar.isEmpty()){
+                            sozinhoNoBar();
+                        }else {
+                            criarFeedProfileIndividualmente(uidsNoBar.get(0), 0);
                         }
-                    });
+                    }
+                });
+    }
+
+    private void criarFeedProfileIndividualmente(String uid, final int currentIndex){
+        final File tempAvatar = new File(getCacheDir() + uid + "_tempAvatar.jpg");
+        FirebaseStorage.getInstance().getReference("/" + uid + ".jpg")
+                .getFile(tempAvatar)
+                .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        gerarDrawables(tempAvatar, currentIndex);
+                    }
+                });
+    }
+
+    private void gerarDrawables(File avatar, int current){
+        Bitmap _avatar = BitmapFactory.decodeFile(avatar.getPath());
+        RoundedBitmapDrawable rndAvatar = RoundedBitmapDrawableFactory.create(getResources(), _avatar);
+        rndAvatar.setCircular(true);
+
+        int resourceId = getResources().getIdentifier(cevasNoBar.get(current), "drawable", getPackageName());
+        Bitmap ceva = BitmapFactory.decodeResource(getResources(), resourceId);
+        RoundedBitmapDrawable rndCeva = RoundedBitmapDrawableFactory.create(getResources(), ceva);
+        rndCeva.setCircular(true);
+
+        mProfileList.add(new FeedProfile(usersNoBar.get(current), "1 hora", rndAvatar, rndCeva));
+        Log.d("Debug", "Perfil criado para " + uidsNoBar.get(current));
+        Log.d("Debug", "Avatar: " + avatar.getPath());
+        Log.d("Debug", "Ceva: " + cevasNoBar.get(current));
+        Log.d("Debug", "Username: " + usersNoBar.get(current));
+
+        current+=1;
+        if(mRecyclerView == null){
+            setAndStartRecyclerView();
+        }else{
+            RVAdapter_Feed adapter = new RVAdapter_Feed(mProfileList);
+            mRecyclerView.setAdapter(adapter);
+        }
+        if(current < uidsNoBar.size()){
+            criarFeedProfileIndividualmente(uidsNoBar.get(current), current);
+        }else{
+            Log.d("Debug", "Todos perfis fqoram criados.");
         }
     }
 
-    /*
-    Metodo responsavel por salvar os avatares na lista de avatares para envio ao ViewHolder
-     */
-    private void saveAvatarToList(){
-       for(String path : cachePaths){
-           Bitmap bmp = BitmapFactory.decodeFile(path);
-           RoundedBitmapDrawable rnd = RoundedBitmapDrawableFactory.create(getResources(), bmp);
-           rnd.setCircular(true);
-           avatars.add(rnd);
-       }
-       prepareProfilesList();
-    }
 
     /*
     Metodo responsavel por configurar o RecyclerView e trocar a View para a View dele, ultimo metodo chamado na sequencia
@@ -232,13 +255,20 @@ public class FeedBar extends AppCompatActivity {
     private void setAndStartRecyclerView(){
         ViewGroup layout = (ViewGroup) getLayoutInflater().inflate(R.layout.feed_bar, null);
         RVAdapter_Feed adapt = new RVAdapter_Feed(mProfileList);
+        final TextView mNomeBar = layout.findViewById(R.id.nome_bar);
+        mFirestore.document(bar).get()
+        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                mNomeBar.setText(documentSnapshot.get("nome").toString().toUpperCase());
+            }
+        });
         mRecyclerView = layout.findViewById(R.id.feed_recycler);
         LinearLayoutManager llm = new LinearLayoutManager(this, RecyclerView.VERTICAL,false);
         mRecyclerView.setLayoutManager(llm);
         mRecyclerView.setAdapter(adapt);
         setContentView(layout);
     }
-
 
     private void sozinhoNoBar(){
         Toast.makeText(this, "Voce está sozinho por aqui... Que tal mostrar o app para seus amigos?", Toast.LENGTH_LONG).show();
@@ -266,8 +296,10 @@ public class FeedBar extends AppCompatActivity {
                 }
                 else {
                     // swipe direita
-                    Intent goqr = new Intent(this, leitor_cod_qr.class);
-                    startActivity(goqr);
+                    Intent goperfil = new Intent(this, perfil.class);
+                    goperfil.putExtra("uid", mAuth.getUid());
+                    goperfil.putExtra("from", "feed");
+                    startActivity(goperfil);
                     overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                 }
 

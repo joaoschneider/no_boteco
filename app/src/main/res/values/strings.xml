@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">No Boteco</string>
 
+    <!-- Primeira Tela (de acesso) -->
+    <string name="acessar">Acessar</string>
+
     <!-- Tela de Leitor QR -->
     <string name="scan">Escanear código QR</string>
 

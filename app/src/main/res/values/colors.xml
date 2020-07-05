@@ -8,4 +8,6 @@
     <color name="amarelo">#FFC600</color>
     <color name="vermelho">#bc001d</color>
     <color name="branco">#FFFFFF</color>
+    <color name="fundo_feed">#2d292b</color>
+    <color name="texto_feed">#7c7474</color>
 </resources>

@@ -1,5 +1,7 @@
 package com.noboteco.noboteco;
 
+import android.graphics.Color;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -55,6 +58,7 @@ public class RVAdapter_Feed extends RecyclerView.Adapter<RVAdapter_Feed.FeedProf
         FeedProfileViewHolder(View itemView){
             super(itemView);
             cv = itemView.findViewById(R.id.cv);
+            cv.setRadius(35);
             username = itemView.findViewById(R.id.username);
             noBarHa = itemView.findViewById(R.id.noBarHa);
             avatar = itemView.findViewById(R.id.avatar);
