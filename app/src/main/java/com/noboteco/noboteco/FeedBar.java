@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -53,6 +54,8 @@ public class FeedBar extends AppCompatActivity {
     private float x1, x2;
     private GestureDetector gestureDetector;
 
+    private static Bundle mRecyclerState;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,13 +69,23 @@ public class FeedBar extends AppCompatActivity {
         avatars = new LinkedList<>();
 
         loginToBar();
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("Debug", "onPause()");
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("Debug", "onDestroy()");
     }
 
     /*
-    Metodo responsavel por definir os dados do usuario par ao login (uid, username e cerveja favorita)
-    */
+            Metodo responsavel por definir os dados do usuario par ao login (uid, username e cerveja favorita)
+            */
     private void loginToBar(){
         String uid = mAuth.getUid();
         final Map<String,String> dadosParaLogin = new HashMap<>();
@@ -141,6 +154,11 @@ public class FeedBar extends AppCompatActivity {
             i+=1;
             Log.d("Debug", "Perfil de Feed do usuario criado");
         }
+        for(FeedProfile p : mProfileList){
+            Log.d("Debug", p.username);
+            Log.d("Debug", p.avatar.toString());
+            Log.d("Debug", p.fav_cerveja.toString());
+        }
         Log.d("Debug", mProfileList.toString());
         setAndStartRecyclerView();
     }
@@ -149,9 +167,9 @@ public class FeedBar extends AppCompatActivity {
     Metodo responsavel por verificar quais usuarios estão online no bar que o usuário acessou
      */
     private void getUsersOnline(){
-        uidsNoBar = new ArrayList<>();
-        usersNoBar = new ArrayList<>();
-        cevasNoBar = new ArrayList<>();
+        uidsNoBar = new LinkedList<>();
+        usersNoBar = new LinkedList<>();
+        cevasNoBar = new LinkedList<>();
         mFirestore.collection("/bares/bar_do_jorge/users_online").get()
             .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
