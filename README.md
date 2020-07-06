@@ -9,7 +9,7 @@ Plataforma: Android
 Ferramenta de Banco de Dados: Firebase (Firestore e Storage)  
 Autenticação: Firebase Authentication (e-mail e senha)  
 Bibliotecas de terceiros utilizadas:  
-'me.dm7.barcodescanner:zxing:1.9.13' - implementação do leitor de QR Code. Mais informações em https://github.com/dm77/barcodescanner  
+'me.dm7.barcodescanner:zxing:1.9.13' - implementação do leitor de QR Code. Mais informações [aqui]( https://github.com/dm77/barcodescanner)
 
 # Sobre os bancos de dados
 
